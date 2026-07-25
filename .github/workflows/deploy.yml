@@ -21,18 +21,18 @@ jobs: # tasks that the workflow does in parallel by default
             - name: Checkout # name of the task, can be anything
               uses: actions/checkout@v6 # it uses an action from Github Actions, this action helps us to download the repo on the VM
             - name: Setup Pages
-              uses: actions/configure-pages@5 #it helps us to prepare Github Pages for a correct deployment
+              uses: actions/configure-pages@v6 #it helps us to prepare Github Pages for a correct deployment
             - name: Build Diagrams
                 # this is our custom step, it will involve the installation of mermaid-cli and its use to transform the .mmd files into .svgs
               run: |
                 npm install -g @mermaid-js/mermaid-cli
                 bash scripts/build-diagrams.sh
             - name: Upload Artifacts
-              uses: actions/upload-pages-artifact@v4 #an action that receives an artifact as input and then serves it through internet
+              uses: actions/upload-pages-artifact@v5 #an action that receives an artifact as input and then serves it through internet
               with:
                 path: './public'
             - name: Deploy to Github Pages
               id: deployment
-              uses: actions/deploy-pages@v4
+              uses: actions/deploy-pages@v5
 
 
