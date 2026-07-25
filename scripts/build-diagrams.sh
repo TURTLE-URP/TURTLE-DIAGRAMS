@@ -7,7 +7,7 @@ find diagrams -name "*.mmd" | while read -r input; do
 
     mkdir -p "$(dirname "$output")"
 
-    npx mmdc -i "$input" -o "$output"
+    npx mmdc -i "$input" -o "$output" -p puppeteer-config.json
 
     echo "✔ $input -> $output"
 done

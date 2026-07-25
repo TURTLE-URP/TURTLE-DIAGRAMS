@@ -24,9 +24,6 @@ jobs: # tasks that the workflow does in parallel by default
               uses: actions/configure-pages@v6 #it helps us to prepare Github Pages for a correct deployment
             - name: Build Diagrams
                 # this is our custom step, it will involve the installation of mermaid-cli and its use to transform the .mmd files into .svgs
-              env:
-                # Github Actions Ubuntu Runners do not support out-of-the-box sandboxing, so we tell the runner no to use it.
-                PUPPETEER_ARGS: "--no-sandbox"
               run: |
                 npm install -g @mermaid-js/mermaid-cli
                 bash scripts/build-diagrams.sh
