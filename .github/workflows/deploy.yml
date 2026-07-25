@@ -1,0 +1,38 @@
+# name: name-of-the-workflow
+name: Diagrams Deployment through GitHub Pages
+on: # here we start to define the events that trigger the workflow
+    push: # in this case, we want it to execute on pushes to the repo
+        branches: # specifically, pushes to certain branches
+            - main # in this case, only pushes to the ``main`` branch
+
+permissions: # here we give certain permissions to the workflow
+    contents: read # it can ONLY READ the content of the repo
+    pages: write # it can publish on github pages
+    id-token: write # here we enable secure auth for Pages in Actions
+
+jobs: # tasks that the workflow does in parallel by default
+    deploy: # name of the task/job, can be named anything
+        runs-on: # defines in which runner or machine the job executes
+            labels: ubuntu-latest # in this case, an ubuntu VM with the latest-version
+        environment: # 
+            name: github-pages
+            url: ${{steps.deployment.outputs.page_url}}
+        steps: # the steps that the job comprises in
+            - name: Checkout # name of the task, can be anything
+              uses: actions/checkout@v6 # it uses an action from Github Actions, this action helps us to download the repo on the VM
+            - name: Setup Pages
+              uses: actions/configure-pages@5 #it helps us to prepare Github Pages for a correct deployment
+            - name: Build Diagrams
+                # this is our custom step, it will involve the installation of mermaid-cli and its use to transform the .mmd files into .svgs
+              run: |
+                npm install -g @mermaid-js/mermaid-cli
+                bash scripts/build-diagrams.sh
+            - name: Upload Artifacts
+              uses: actions/upload-pages-artifact@v4 #an action that receives an artifact as input and then serves it through internet
+              with:
+                path: './public'
+            - name: Deploy to Github Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
+
+
