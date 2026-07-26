@@ -22,3 +22,6 @@ yarn-error.log*
 # Editor directories
 .vscode/
 .idea/
+
+# Generated media (built by workflow)
+public/
