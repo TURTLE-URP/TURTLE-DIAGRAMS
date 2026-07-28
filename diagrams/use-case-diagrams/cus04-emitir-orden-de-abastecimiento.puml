@@ -1,0 +1,26 @@
+@startuml CUS04-Emitir Orden de Abastecimiento
+!theme plain
+title CUS04 - Emitir Orden de Abastecimiento
+
+left to right direction
+
+actor Administrador
+actor "Sistema de\ninventarios" as Inventarios
+actor Proveedores
+
+usecase (Emitir Orden\nde Abastecimiento) as UC0
+usecase (Abasto por\nPlatillos) as UC1
+usecase (Abasto por\nEscasez) as UC2
+usecase (Abasto\nLibre) as UC3
+
+Administrador -- UC0
+UC0 <... UC1 : <<extend>>
+UC0 <... UC2 : <<extend>>
+UC0 <... UC3 : <<extend>>
+
+
+Proveedores -- UC0
+Inventarios -- UC1
+Inventarios -- UC2
+Inventarios -- UC3
+@enduml
