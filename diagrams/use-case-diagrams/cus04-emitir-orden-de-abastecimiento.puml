@@ -1,6 +1,9 @@
 @startuml CUS04-Emitir Orden de Abastecimiento
+!pragma layout smetana
 !theme plain
 title CUS04 - Emitir Orden de Abastecimiento
+scale 2
+skinparam dpi 300
 
 left to right direction
 

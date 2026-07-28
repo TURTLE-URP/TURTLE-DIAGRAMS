@@ -25,3 +25,8 @@ yarn-error.log*
 
 # Generated media (built by workflow)
 public/
+
+# Local PlantUML JAR and ad-hoc tool extracts (downloaded in CI / manually)
+tools/*.jar
+tools/graphviz/
+tools/graphviz-deb/

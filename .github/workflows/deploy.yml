@@ -1,38 +1,64 @@
-# name: name-of-the-workflow
 name: Diagrams Deployment through GitHub Pages
-on: # here we start to define the events that trigger the workflow
-    push: # in this case, we want it to execute on pushes to the repo
-        branches: # specifically, pushes to certain branches
-            - main # in this case, only pushes to the ``main`` branch
+on:
+  push:
+    branches:
+      - main
 
-permissions: # here we give certain permissions to the workflow
-    contents: read # it can ONLY READ the content of the repo
-    pages: write # it can publish on github pages
-    id-token: write # here we enable secure auth for Pages in Actions
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
-jobs: # tasks that the workflow does in parallel by default
-    deploy: # name of the task/job, can be named anything
-        runs-on: # defines in which runner or machine the job executes
-            labels: ubuntu-latest # in this case, an ubuntu VM with the latest-version
-        environment: # 
-            name: github-pages
-            url: ${{steps.deployment.outputs.page_url}}
-        steps: # the steps that the job comprises in
-            - name: Checkout # name of the task, can be anything
-              uses: actions/checkout@v6 # it uses an action from Github Actions, this action helps us to download the repo on the VM
-            - name: Setup Pages
-              uses: actions/configure-pages@v6 #it helps us to prepare Github Pages for a correct deployment
-            - name: Build Diagrams
-                # this is our custom step, it will involve the installation of mermaid-cli and its use to transform the .mmd files into .svgs
-              run: |
-                npm install -g @mermaid-js/mermaid-cli
-                bash scripts/build-diagrams.sh
-            - name: Upload Artifacts
-              uses: actions/upload-pages-artifact@v5 #an action that receives an artifact as input and then serves it through internet
-              with:
-                path: './public'
-            - name: Deploy to Github Pages
-              id: deployment
-              uses: actions/deploy-pages@v5
+env:
+  PLANTUML_VERSION: "1.2026.6"
 
+jobs:
+  deploy:
+    runs-on:
+      labels: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Graphviz
+        run: sudo apt-get update && sudo apt-get install -y graphviz
+
+      - name: Download PlantUML
+        run: |
+          mkdir -p tools
+          curl -fsSL -o tools/plantuml.jar \
+            "https://github.com/plantuml/plantuml/releases/download/v${PLANTUML_VERSION}/plantuml-${PLANTUML_VERSION}.jar"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Build Diagrams
+        run: |
+          npm ci
+          bash scripts/build-diagrams.sh
+        env:
+          PLANTUML_JAR: ${{ github.workspace }}/tools/plantuml.jar
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: "./public"
+
+      - name: Deploy to Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
